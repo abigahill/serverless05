@@ -56,7 +56,7 @@ public class ApiHandler implements RequestHandler<ApiRequest, ApiResponse> {
 
 		ApiResponse response = new ApiResponse();
 		response.setStatusCode(201);
-		response.setEvent(item.toJSON());
+		response.setEvent(item.toString());
 		return response;
 	}
 
