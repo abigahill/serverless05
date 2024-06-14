@@ -23,6 +23,7 @@ import java.util.UUID;
 
 import com.task05.model.ApiResponse;
 import com.task05.model.ApiRequest;
+import com.task05.model.EventEntity;
 
 @LambdaHandler(lambdaName = "api_handler",
 	roleName = "api_handler-role",
@@ -51,12 +52,11 @@ public class ApiHandler implements RequestHandler<ApiRequest, ApiResponse> {
 		Item item = buildItem(request);
 		context.getLogger().log("Saving item: " + item);
 
-		PutItemOutcome putItemOutcome = dbTable.putItem(item);
-		context.getLogger().log("putItemOutcome: " + putItemOutcome.toString());
+		dbTable.putItem(item);
 
 		ApiResponse response = new ApiResponse();
 		response.setStatusCode(201);
-		response.setEvent(item.toString());
+		response.setEvent(buildEntity(item));
 		return response;
 	}
 
@@ -66,5 +66,14 @@ public class ApiHandler implements RequestHandler<ApiRequest, ApiResponse> {
 				.withInt("principalId", request.getPrincipalId())
 				.withString("createdAt", new DateTime().toString())
 				.withMap("body", request.getContent());
+	}
+
+	private EventEntity buildEntity(Item item) {
+		EventEntity entity = new EventEntity();
+		entity.setId(item.getString("id"));
+		entity.setPrincipalId(item.getInt("principalId"));
+		entity.setCreatedAt(item.getString("createdAt"));
+		entity.setBody(item.getMap("body"));
+		return entity;
 	}
 }
